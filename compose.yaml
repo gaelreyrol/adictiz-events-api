@@ -1,0 +1,17 @@
+
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-17}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-adictiz}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adictiz}
+      POSTGRES_USER: ${POSTGRES_USER:-adictiz}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+volumes:
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
