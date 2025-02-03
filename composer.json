@@ -1,4 +1,6 @@
 {
+    "name": "gaelreyrol/adictiz-events-api",
+    "description": "An application to manage events for Adictiz",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -104,6 +106,8 @@
         "php-cs-fixer": "@php vendor/bin/php-cs-fixer",
         "phpstan": "@php vendor/bin/phpstan",
         "lint": [
+            "@php bin/console lint:container",
+            "@php bin/console doctrine:schema:validate",
             "@php-cs-fixer check -v",
             "@phpstan analyze"
         ],
