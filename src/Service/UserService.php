@@ -8,10 +8,12 @@ use Adictiz\Exception\UserCreationFailureException;
 use Adictiz\Exception\UserNotFoundException;
 use Adictiz\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final readonly class UserService
 {
     public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
         private UserRepository $userRepository,
         private LoggerInterface $logger,
     ) {
@@ -30,6 +32,7 @@ final readonly class UserService
     public function create(User $user): User
     {
         try {
+            $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
             $this->userRepository->save($user);
         } catch (\Exception $exception) {
             $this->logger->error('Failed to create user', [

@@ -2,11 +2,23 @@ default:
     suites:
         default:
             contexts:
-                - Adictiz\Tests\Behat\DemoContext
+                - Behat\MinkExtension\Context\MinkContext
+                - behatch:context:rest
+                - behatch:context:json
+                - Adictiz\Tests\Behat\UserContext
+                - Adictiz\Tests\Behat\AuthenticationContext
 
     extensions:
         FriendsOfBehat\SymfonyExtension:
             kernel:
                 class: Adictiz\Kernel
+                environment: test
+                debug: true
             bootstrap: tests/bootstrap.php
         DAMA\DoctrineTestBundle\Behat\ServiceContainer\DoctrineExtension: ~
+        Behat\MinkExtension:
+            base_url: 'http://localhost:8000'
+            sessions:
+              default:
+                symfony: ~
+        Behatch\Extension: ~

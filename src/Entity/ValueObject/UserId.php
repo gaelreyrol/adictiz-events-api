@@ -12,19 +12,19 @@ final class UserId implements \Stringable
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: Types::GUID)]
-    private AbstractUid $value;
+    private string $value;
 
     public function __construct(?AbstractUid $value = null)
     {
-        $this->value = $value ?? Uuid::v4();
+        $this->value = $value?->toRfc4122() ?? Uuid::v4()->toRfc4122();
     }
 
     public function __toString(): string
     {
-        return (string) $this->value;
+        return $this->value;
     }
 
-    public function getValue(): AbstractUid
+    public function getValue(): string
     {
         return $this->value;
     }
