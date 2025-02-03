@@ -66,6 +66,9 @@ jobs:
 
     phpunit:
         name: PHPUnit
+        needs:
+            - lint
+        if: needs.lint.result == 'success'
         runs-on: ubuntu-latest
         services:
             database:
@@ -110,6 +113,9 @@ jobs:
 
     behat:
         name: Behat
+        needs:
+            - lint
+        if: needs.lint.result == 'success'
         runs-on: ubuntu-latest
         services:
             database:
