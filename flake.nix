@@ -10,6 +10,8 @@
         pkgs = import nixpkgs { inherit system; };
         phpEnv = pkgs.php83.buildEnv {
           extensions = ({ enabled, all }: enabled ++ (with all; [
+            apcu
+            opcache
             xdebug
           ]));
         };

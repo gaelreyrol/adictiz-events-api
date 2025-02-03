@@ -1,4 +1,6 @@
 {
+    "name": "gaelreyrol/adictiz-events-api",
+    "description": "An application to manage events for Adictiz",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -7,6 +9,7 @@
         "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
@@ -15,6 +18,7 @@
         "ext-session": "*",
         "ext-simplexml": "*",
         "ext-tokenizer": "*",
+        "ext-zip": "*",
         "beberlei/assert": "^3.3",
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.13",
@@ -34,6 +38,7 @@
         "symfony/runtime": "^6.4",
         "symfony/security-bundle": "^6.4",
         "symfony/serializer": "^6.4",
+        "symfony/twig-bundle": "^6.4",
         "symfony/uid": "^6.4",
         "symfony/validator": "^6.4",
         "symfony/yaml": "^6.4"
@@ -104,6 +109,8 @@
         "php-cs-fixer": "@php vendor/bin/php-cs-fixer",
         "phpstan": "@php vendor/bin/phpstan",
         "lint": [
+            "@php bin/console lint:container",
+            "@php bin/console doctrine:schema:validate",
             "@php-cs-fixer check -v",
             "@phpstan analyze"
         ],

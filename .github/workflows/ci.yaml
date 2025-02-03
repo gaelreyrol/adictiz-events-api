@@ -1,0 +1,160 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+
+env:
+    APP_ENV: test
+
+jobs:
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        services:
+            database:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_USER: adictiz
+                    POSTGRES_PASSWORD: adictiz
+                    POSTGRES_DB: adictiz_test
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 5432:5432
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.3
+                    extensions: ctype, iconv, json, mbstring, pcre, pdo_pgsql, pgsql, session, simplexml, tokenizer
+                    tools: composer
+            -   name: Get composer cache directory
+                id: composercache
+                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            -   name: Cache dependencies
+                uses: actions/cache@v4
+                with:
+                    path: ${{ steps.composercache.outputs.dir }}
+                    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                    restore-keys: ${{ runner.os }}-composer-
+            -   name: Install project dependencies
+                run: composer install --ansi --no-interaction --no-progress --ignore-platform-req=xdebug
+            -   name: Run Doctrine migrations
+                run: bin/console doctrine:migrations:migrate --no-interaction
+            -   name: Lint YAML files
+                run: bin/console lint:yaml config --parse-tags
+            -   name: Lint Symfony container
+                run: bin/console lint:container
+            -   name: Lint Doctrine entities
+                run: bin/console doctrine:schema:validate
+            -   name: Lint Composer file
+                run: composer validate --strict
+            -   name: Run PHP-CS-Fixer
+                run: vendor/bin/php-cs-fixer check
+            -   name: Run PHPStan
+                run: vendor/bin/phpstan analyze
+
+    phpunit:
+        name: PHPUnit
+        needs:
+            - lint
+        if: needs.lint.result == 'success'
+        runs-on: ubuntu-latest
+        services:
+            database:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_USER: adictiz
+                    POSTGRES_PASSWORD: adictiz
+                    POSTGRES_DB: adictiz_test
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 5432:5432
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.3
+                    extensions: ctype, iconv, json, mbstring, pcre, pdo_pgsql, pgsql, session, simplexml, tokenizer
+                    tools: composer
+            -   name: Get composer cache directory
+                id: composercache
+                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            -   name: Cache dependencies
+                uses: actions/cache@v4
+                with:
+                    path: ${{ steps.composercache.outputs.dir }}
+                    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                    restore-keys: ${{ runner.os }}-composer-
+            -   name: Install project dependencies
+                run: composer install --ansi --no-interaction --no-progress --ignore-platform-req=xdebug
+            -   name: Run Doctrine migrations
+                run: bin/console doctrine:migrations:migrate --no-interaction
+            -   name: Generate JWT keys
+                run: bin/console lexik:jwt:generate-keypair
+            -   name: Run PHPUnit
+                run: vendor/bin/phpunit
+
+    behat:
+        name: Behat
+        needs:
+            - lint
+        if: needs.lint.result == 'success'
+        runs-on: ubuntu-latest
+        services:
+            database:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_USER: adictiz
+                    POSTGRES_PASSWORD: adictiz
+                    POSTGRES_DB: adictiz_test
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 5432:5432
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.3
+                    extensions: ctype, iconv, json, mbstring, pcre, pdo_pgsql, pgsql, session, simplexml, tokenizer
+                    tools: composer
+            -   name: Get composer cache directory
+                id: composercache
+                run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+            -   name: Cache dependencies
+                uses: actions/cache@v4
+                with:
+                    path: ${{ steps.composercache.outputs.dir }}
+                    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                    restore-keys: ${{ runner.os }}-composer-
+            -   name: Install project dependencies
+                run: composer install --ansi --no-interaction --no-progress --ignore-platform-req=xdebug
+            -   name: Run Doctrine migrations
+                run: bin/console doctrine:migrations:migrate --no-interaction
+            -   name: Generate JWT keys
+                run: bin/console lexik:jwt:generate-keypair
+            -   name: Run Behat
+                run: vendor/bin/behat
