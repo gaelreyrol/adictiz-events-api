@@ -1,0 +1,12 @@
+default:
+    suites:
+        default:
+            contexts:
+                - Adictiz\Tests\Behat\DemoContext
+
+    extensions:
+        FriendsOfBehat\SymfonyExtension:
+            kernel:
+                class: Adictiz\Kernel
+            bootstrap: tests/bootstrap.php
+        DAMA\DoctrineTestBundle\Behat\ServiceContainer\DoctrineExtension: ~
