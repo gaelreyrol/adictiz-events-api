@@ -32,6 +32,14 @@ Copiez le fichier .env en .env.local et modifiez-le si nécessaire :
 cp .env .env.local
 ```
 
+### Configuration des clés
+
+Enfin de permettre la génération et la vérification des tokens JWT, il faut préalable créer une paire de clé SSL :
+
+```shell
+bin/console lexik:jwt:generate-keypair
+```
+
 ### Installation des dépendances
 
 Une fois les pré-requis installés, il faut installer les dépendances liées à l'application :
@@ -48,13 +56,23 @@ Pour permettre à l'application de disposer de ses services tiers, il faut exéc
 docker compose up -d
 ```
 
-Une fois le conteneur de la base de données actif et en cours d'exécution, il ne reste plus qu'à lancer le serveur PHP :
+Une fois les services tiers actifs et en cours d'exécution, il ne reste plus qu'à exécuter les migrations et lancer le serveur PHP :
 
 ```shell
+bin/console doctrine:database:create --if-not-exists
+bin/console doctrine:database:migrate
 symfony server:start # -d pour lancer le serveur en arrière plan
 ```
 
 ## Exécution des tests
+
+Avant d'exécuter les tests, assurez-vous que le schéma de la base de données soit à jour :
+
+```shell
+bin/console doctrine:database:create --if-not-exists --env=test
+bin/console doctrine:schema:drop --force --env=test
+bin/console doctrine:schema:update --force --env=test
+```
 
 Pour lancer les tests unitaires :
 
