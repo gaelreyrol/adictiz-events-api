@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ include "adictiz-events-api.fullname" . }}
+    labels:
+    {{- include "adictiz-events-api.labels" . | nindent 8 }}
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+        {{- include "adictiz-events-api.selectorLabels" . | nindent 12 }}
+    template:
+        metadata:
+            annotations:
+                checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+                checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+                checksum/secret-jwt-keys: {{ include (print $.Template.BasePath "/secrets-jwt-keys.yaml") . | sha256sum }}
+            labels:
+            {{- include "adictiz-events-api.labels" . | nindent 16 }}
+        spec:
+            serviceAccountName: {{ include "adictiz-events-api.serviceAccountName" . }}
+            volumes:
+                - name: jwt-keys
+                  secret:
+                      secretName: {{ include "adictiz-events-api.fullname" . }}-jwt-keys
+            containers:
+                -   name: {{ .Chart.Name }}
+                    image: "{{ .Values.php.image.registry }}/{{ .Values.php.image.repository }}:{{ .Values.php.image.tag }}"
+                    imagePullPolicy: {{ .Values.php.image.pullPolicy }}
+                    envFrom:
+                        -   configMapRef:
+                                name: {{ include "adictiz-events-api.fullname" . }}
+                        -   secretRef:
+                                name: {{ include "adictiz-events-api.fullname" . }}
+                    volumeMounts:
+                        -   name: jwt-keys
+                            mountPath: /srv/app/config/jwt
+                            readOnly: true
+                    ports:
+                        -   name: http
+                            containerPort: 9000
+                            protocol: TCP
+                    livenessProbe:
+                        tcpSocket:
+                            port: 9000
+                        initialDelaySeconds: 3
+                        periodSeconds: 3
+                    readinessProbe:
+                        tcpSocket:
+                            port: 9000
+                        initialDelaySeconds: 3
+                        periodSeconds: 3

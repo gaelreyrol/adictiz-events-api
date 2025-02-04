@@ -12,11 +12,16 @@ Pour développer sur ce projet, vous aurez besoin de :
 
 - PHP 8.3 & Composer 2.8
 - Docker & Docker Compose
-- Symfony CLI
+- [Symfony CLI](https://github.com/symfony-cli/symfony-cli)
+- [kubectl](https://kubernetes.io/fr/docs/tasks/tools/install-kubectl/)
+- [Helm](https://helm.sh/docs/intro/install/)
+- [minikube](https://minikube.sigs.k8s.io/docs/start)
+- [skaffold](https://skaffold.dev/docs/install/#standalone-binary)
+- [chart-testing](https://github.com/helm/chart-testing)
 
 #### Direnv & Nix
 
-Si vous utilisez Nix et Direnv, pour bénéficier de PHP, Composer & Symfony CLI, il vous suffit d'exécuter la commande suivante :
+Si vous utilisez Nix et Direnv, pour bénéficier de tous les pré-requis sauf Docker & Docker Compose, il vous suffit d'exécuter la commande suivante :
 
 ```shell
 direnv allow
@@ -98,4 +103,31 @@ Si vous avez lancé le serveur PHP en arrière plan :
 
 ```shell
 symfony server:stop
+```
+
+## Environnement local Kubernetes
+
+Cette section décrit comment configurer un cluster local avec minikube, déployer l'environnement via Skaffold et vérifier que l'API répond correctement.
+
+### Configuration du cluster minikube
+
+Pour démarrer votre cluster minikube et activer l'addon Ingress (utile pour la gestion des routes HTTP externes), exécutez les commandes suivantes :
+
+```shell
+minikube start
+minikube addons enable ingress
+```
+
+### Déploiement de l'environnement
+
+Le déploiement de l'application est automatisé grâce à Skaffold. Assurez-vous que votre fichier skaffold.yaml est correctement configuré. Ensuite, lancez la commande suivante :
+
+```shell
+skaffold dev
+```
+
+Une fois le déploiement effectué, vérifier que l'API répond correctement avec la commande suivante :
+
+```shell
+curl --resolve "adictiz-events-api.local:80:$(minikube ip)" -i http://adictiz-events-api.local
 ```

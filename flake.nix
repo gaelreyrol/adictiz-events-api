@@ -20,6 +20,11 @@
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [
+              kubectl
+              kubernetes-helm
+              minikube
+              skaffold
+              chart-testing
               symfony-cli
               phpEnv
               phpEnv.packages.composer

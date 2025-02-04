@@ -1,0 +1,33 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+    name: adictiz-events-api
+build:
+    tagPolicy:
+        sha256: {}
+    artifacts:
+        -   image: adictiz/events-api-php
+            context: .
+            docker:
+                dockerfile: docker/php/Dockerfile
+
+deploy:
+    kubeContext: minikube
+    helm:
+        releases:
+            -   name: adictiz-events-api
+                chartPath: ./kubernetes/helm/adictiz-events-api
+                namespace: default
+                valuesFiles:
+                    - ./kubernetes/helm/adictiz-events-api/values.yaml
+                setValueTemplates:
+                    php.image.registry: "{{.IMAGE_DOMAIN_adictiz_events_api_php}}"
+                    php.image.repository: "{{.IMAGE_REPO_NO_DOMAIN_adictiz_events_api_php}}"
+                    php.image.tag: "{{.IMAGE_TAG_adictiz_events_api_php}}@{{.IMAGE_DIGEST_adictiz_events_api_php}}"
+
+portForward:
+    - resourceType: service
+      resourceName: adictiz-events-api-nginx
+      namespace: default
+      port: 80
+      localPort: 8000
