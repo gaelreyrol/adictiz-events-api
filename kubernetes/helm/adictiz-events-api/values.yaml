@@ -1,0 +1,96 @@
+replicaCount: 1
+
+php:
+    image:
+        registry: ghcr.io
+        repository: gaelreyrol/adictiz-events-api
+        pullPolicy: IfNotPresent
+        tag: latest
+    env:
+        appEnv: 'prod'
+        appDebug: false
+        appSecret: ''
+        trustedHosts: "^127\\.0\\.0\\.1|localhost|adictiz\\-events\\-api\\.local$"
+        trustedProxies:
+            - "127.0.0.1"
+            - "10.0.0.0/8"
+            - "172.16.0.0/12"
+            - "192.168.0.0/16"
+    jwt:
+        passphrase: ''
+        secretKey: |
+            -----BEGIN ENCRYPTED PRIVATE KEY-----
+            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
+            Pt327e3bzxrb2nAq81Bo0focjQH9+gJK
+            -----END ENCRYPTED PRIVATE KEY-----
+        publicKey: |
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8U1+K0pPf4yzUMRpXfDk
+            wcG5ObneAiaaJPNpBBPAlZ1uc5yEgbYvKQPtj2txZrM+kcDzZznxcjjs8GJwrDdz
+            UvAw2M1MO5Ga4QTU55HO2+ScVZnQ7palF7s+3UN0jNJuJZp+qDEVLBX7t16vCXJz
+            YagW8yc5ZrBNvG0CsSs7jt2pErEYqhOzxori/qBMSI+f8KnJ7PGjPHiAs+b2aRrb
+            w3McQ1aSvQfvM4E30I0RhaKLl6HnMYe1yAFmloGmdJmCLvGKBE/T3nztdyk0r3+L
+            CRoM7p4c/44BDMW/89dJRz22ILR98HYbQd7Wa67lOOK7d4dDFcrgGnzOcU6RaX3C
+            SQIDAQAB
+            -----END PUBLIC KEY-----
+
+
+# Full configuration: https://github.com/bitnami/charts/tree/main/bitnami/nginx
+nginx:
+    service:
+        type: ClusterIP
+    ingress:
+        enabled: true
+        hostname: adictiz-events-api.local
+        path: /
+        kubernetes.io/ingress.class: nginx
+    existingServerBlockConfigmap: adictiz-events-api-nginx
+
+# Full configuration: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+postgresql:
+    enabled: true
+    global:
+        postgresql:
+            auth:
+                username: "adictiz"
+                password: "adictiz"
+                database: "adictiz"
+    primary:
+        persistence:
+            enabled: false
+            storageClass: standard
+            size: 1Gi
+        pullPolicy: IfNotPresent
+        image:
+            repository: bitnami/postgresql
+            tag: 17
+        resources:
+            requests:
+                memory: 50Mi
+                cpu: 1m

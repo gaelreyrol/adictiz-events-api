@@ -1,5 +1,6 @@
 .idea
 .direnv
+**/charts/*.tgz
 
 ###> symfony/framework-bundle ###
 /.env.local

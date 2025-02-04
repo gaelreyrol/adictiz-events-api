@@ -1,0 +1,17 @@
+apiVersion: v2
+name: adictiz-events-api
+description: A Helm chart for Adictiz Events API
+
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+    - name: postgresql
+      version: ~16.4.6
+      repository: https://charts.bitnami.com/bitnami/
+    - name: nginx
+      version: ~18.3.5
+      repository: https://charts.bitnami.com/bitnami/
+maintainers:
+    - name: gaelreyrol
+      email: me@gaelreyrol.dev

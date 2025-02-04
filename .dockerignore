@@ -8,8 +8,8 @@
 **/.dockerignore
 **/.DS_Store
 **/.git/
-**/.gitattributes
 **/.gitignore
+**/.gitattributes
 **/.gitmodules
 **/compose.*.yaml
 **/compose.*.yml
@@ -21,7 +21,9 @@
 **/docker-compose.yml
 **/Dockerfile
 **/Thumbs.db
+.direnv
 .github/
+kubernetes/
 public/bundles/
 tests/
 var/
