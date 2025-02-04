@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Adictiz\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
