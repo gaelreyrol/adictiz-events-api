@@ -3,12 +3,15 @@
 namespace Adictiz\Service;
 
 use Adictiz\Entity\Event;
+use Adictiz\Entity\EventStatusEnum;
+use Adictiz\Entity\User;
 use Adictiz\Entity\ValueObject\EventId;
 use Adictiz\Exception\EventCreationFailureException;
 use Adictiz\Exception\EventDeletionFailureException;
 use Adictiz\Exception\EventNotFoundException;
 use Adictiz\Exception\EventUpdateFailureException;
 use Adictiz\Repository\EventRepository;
+use Doctrine\Common\Collections\Criteria;
 use Psr\Log\LoggerInterface;
 
 final readonly class EventService
@@ -17,6 +20,34 @@ final readonly class EventService
         private EventRepository $eventRepository,
         private LoggerInterface $logger,
     ) {
+    }
+
+    /**
+     * @return \Generator<Event>
+     */
+    public function findEventsForOwner(
+        User $owner,
+        ?EventStatusEnum $status = null,
+        int $page = 1,
+        int $limit = 10,
+    ): \Generator {
+        $criteria = Criteria::create();
+        $ownerCriteria = $this->eventRepository->filterByOwnerCriteria($owner->getId());
+
+        /* @phpstan-ignore-next-line */
+        $criteria->where($ownerCriteria->getWhereExpression());
+
+        if ($status instanceof EventStatusEnum) {
+            $statusCriteria = $this->eventRepository->filterByStatusCriteria($status);
+            /* @phpstan-ignore-next-line */
+            $criteria->andWhere($statusCriteria->getWhereExpression());
+        }
+
+        $paginator = $this->eventRepository->paginateAllBy($criteria, $page, $limit);
+
+        foreach ($paginator as $event) {
+            yield $event;
+        }
     }
 
     /**

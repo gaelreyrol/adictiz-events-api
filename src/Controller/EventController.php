@@ -2,7 +2,8 @@
 
 namespace Adictiz\Controller;
 
-use Adictiz\DTO\EventDto;
+use Adictiz\DTO\QueryEventDto;
+use Adictiz\DTO\RequestEventDto;
 use Adictiz\Entity\Event;
 use Adictiz\Entity\User;
 use Adictiz\Security\EventVoter;
@@ -11,6 +12,7 @@ use Adictiz\ViewModel\EventViewModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
@@ -32,7 +34,7 @@ class EventController extends AbstractController
         #[CurrentUser]
         User $user,
         #[MapRequestPayload]
-        EventDto $dto,
+        RequestEventDto $dto,
     ): JsonResponse {
         $event = $this->microMapper->map($dto, Event::class, ['owner' => $user]);
 
@@ -51,7 +53,7 @@ class EventController extends AbstractController
     public function update(
         Event $event,
         #[MapRequestPayload]
-        EventDto $dto,
+        RequestEventDto $dto,
     ): JsonResponse {
         $event = $this->microMapper->map($dto, Event::class, ['id' => $event->getId()]);
 
@@ -84,5 +86,20 @@ class EventController extends AbstractController
         $this->eventService->delete($event);
 
         return new JsonResponse(status: Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route(methods: ['GET'], format: 'json')]
+    public function list(
+        #[CurrentUser] User $user,
+        #[MapQueryString] QueryEventDto $dto = new QueryEventDto(),
+    ): JsonResponse {
+        $events = [];
+        foreach ($this->eventService->findEventsForOwner($user, $dto->status, $dto->page, $dto->limit) as $event) {
+            $events[] = $this->microMapper->map($event, EventViewModel::class);
+        }
+
+        return $this->json([
+            'data' => $events,
+        ]);
     }
 }

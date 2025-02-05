@@ -2,7 +2,7 @@
 
 namespace Adictiz\Mapper;
 
-use Adictiz\DTO\EventDto;
+use Adictiz\DTO\RequestEventDto;
 use Adictiz\Entity\Event;
 use Adictiz\Entity\User;
 use Adictiz\Entity\ValueObject\EventId;
@@ -11,8 +11,8 @@ use Adictiz\Service\EventService;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 
-#[AsMapper(from: EventDto::class, to: Event::class)]
-class EventDtoToEntityMapper implements MapperInterface
+#[AsMapper(from: RequestEventDto::class, to: Event::class)]
+class RequestEventDtoToEntityMapper implements MapperInterface
 {
     public function __construct(private readonly EventService $eventService)
     {
@@ -29,7 +29,7 @@ class EventDtoToEntityMapper implements MapperInterface
     public function load(object $from, string $toClass, array $context): object
     {
         $dto = $from;
-        assert($dto instanceof EventDto);
+        assert($dto instanceof RequestEventDto);
 
         if (array_key_exists('id', $context)) {
             return $this->eventService->get($context['id']);
@@ -55,7 +55,7 @@ class EventDtoToEntityMapper implements MapperInterface
         $dto = $from;
         $event = $to;
 
-        assert($dto instanceof EventDto);
+        assert($dto instanceof RequestEventDto);
         assert($event instanceof Event);
 
         $event->setTitle(new EventTitle($dto->title));
