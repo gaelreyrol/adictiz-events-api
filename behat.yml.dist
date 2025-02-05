@@ -3,10 +3,10 @@ default:
         default:
             contexts:
                 - Behat\MinkExtension\Context\MinkContext
-                - behatch:context:rest
                 - behatch:context:json
+                - Adictiz\Tests\Behat\ApiContext
                 - Adictiz\Tests\Behat\UserContext
-                - Adictiz\Tests\Behat\AuthenticationContext
+                - Adictiz\Tests\Behat\EventContext
 
     extensions:
         FriendsOfBehat\SymfonyExtension:

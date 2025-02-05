@@ -5,8 +5,8 @@ namespace Adictiz\Tests\PHPUnit\Unit\User;
 use Adictiz\Entity\ValueObject\UserId;
 use Adictiz\Exception\UserCreationFailureException;
 use Adictiz\Exception\UserNotFoundException;
-use Adictiz\Factory\UserFactory;
 use Adictiz\Service\UserService;
+use Adictiz\Tests\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**

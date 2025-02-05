@@ -2,8 +2,10 @@
 
 namespace Adictiz\Command;
 
+use Adictiz\Entity\User;
+use Adictiz\Entity\ValueObject\UserEmail;
+use Adictiz\Entity\ValueObject\UserId;
 use Adictiz\Exception\AbstractUserException;
-use Adictiz\Factory\UserFactory;
 use Adictiz\Service\UserService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -39,7 +41,7 @@ final class CreateUserCommand extends Command
         $password = $input->getArgument('password');
 
         try {
-            $this->userService->create(UserFactory::create($email, $password));
+            $this->userService->create(new User(new UserId(), new UserEmail($email), $password));
         } catch (AbstractUserException $exception) {
             $io->error(array_filter([
                 'An error occurred while creating the user',

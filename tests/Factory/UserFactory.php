@@ -1,6 +1,6 @@
 <?php
 
-namespace Adictiz\Factory;
+namespace Adictiz\Tests\Factory;
 
 use Adictiz\Entity\User;
 use Adictiz\Entity\ValueObject\UserEmail;
