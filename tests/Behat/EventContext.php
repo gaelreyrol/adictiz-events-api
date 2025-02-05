@@ -11,6 +11,7 @@ use Adictiz\Service\EventService;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\TableNode;
 use Behat\Hook\BeforeScenario;
 use Behat\Step\Given;
 
@@ -31,7 +32,7 @@ class EventContext implements Context
     }
 
     #[Given('I create an event :id, :title, :description, :startDate, :endDate, :status')]
-    public function iCreateAnEventWithIdAs(string $id, string $title, string $description, string $startDate, string $endDate, string $status): void
+    public function iCreateAnEvent(string $id, string $title, string $description, string $startDate, string $endDate, string $status): void
     {
         $event = new Event(EventId::fromString($id), new EventTitle($title), $description, $this->getUser());
         $startDateTime = \DateTime::createFromFormat('Y-m-d', $startDate);
@@ -43,6 +44,15 @@ class EventContext implements Context
         $event->setStatus(EventStatusEnum::from($status));
 
         $this->eventService->create($event);
+    }
+
+    #[Given('I create multiple events:')]
+    public function iCreateMultipleEvents(TableNode $data): void
+    {
+        foreach ($data->getHash() as $row) {
+            /* @phpstan-ignore-next-line */
+            $this->iCreateAnEvent($row['id'], $row['title'], $row['description'], $row['startDate'], $row['endDate'], $row['status']);
+        }
     }
 
     private function getUser(): User

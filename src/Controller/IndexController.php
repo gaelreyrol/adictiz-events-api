@@ -16,7 +16,7 @@ class IndexController extends AbstractController
     }
 
     #[Route('/exception')]
-    public function exception(): Response
+    public function exception(): never
     {
         throw new BadRequestHttpException('Oups!');
     }

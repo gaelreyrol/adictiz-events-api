@@ -5,7 +5,7 @@ namespace Adictiz\DTO;
 use Adictiz\Entity\EventStatusEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class EventDto
+readonly class RequestEventDto
 {
     public function __construct(
         #[Assert\NotBlank]

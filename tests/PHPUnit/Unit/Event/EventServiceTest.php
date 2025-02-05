@@ -24,6 +24,25 @@ class EventServiceTest extends KernelTestCase
         $this->eventService = self::getContainer()->get(EventService::class);
     }
 
+    public function testPaginateEvents(): void
+    {
+        $user = $this->userService->create(UserFactory::create('john@doe.com', 'password'));
+
+        $this->eventService->create(EventFactory::create('title 1', 'description 1', $user));
+        $this->eventService->create(EventFactory::create('title 2', 'description 2', $user));
+
+        $user2 = $this->userService->create(UserFactory::create('john@snow.com', 'password'));
+
+        $this->eventService->create(EventFactory::create('title 3', 'description 1', $user2));
+        $this->eventService->create(EventFactory::create('title 4', 'description 2', $user2));
+
+        $events = iterator_to_array($this->eventService->findEventsForOwner(owner: $user, page: 1, limit: 1));
+        self::assertCount(1, $events);
+        foreach ($events as $event) {
+            self::assertSame($user, $event->getOwner());
+        }
+    }
+
     public function testGetEvent(): void
     {
         $eventId = EventId::fromString('cb3ca884-1b37-4b96-bfb0-4ff612b912d4');
