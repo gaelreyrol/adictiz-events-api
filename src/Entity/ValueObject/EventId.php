@@ -24,11 +24,6 @@ final class EventId implements \Stringable
         return $this->value;
     }
 
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
     public static function fromString(string $value): self
     {
         return new self(Uuid::fromString($value));

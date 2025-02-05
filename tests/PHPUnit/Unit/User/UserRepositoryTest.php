@@ -2,8 +2,8 @@
 
 namespace Adictiz\Tests\PHPUnit\Unit\User;
 
-use Adictiz\Factory\UserFactory;
 use Adictiz\Repository\UserRepository;
+use Adictiz\Tests\Factory\UserFactory;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 

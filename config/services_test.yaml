@@ -5,3 +5,9 @@ services:
 
     Adictiz\Tests\Behat\:
         resource: '../tests/Behat/*'
+
+    behatch.http_call.request:
+        class: Behatch\HttpCall\Request
+        arguments:
+            - '@behat.mink'
+        public: false

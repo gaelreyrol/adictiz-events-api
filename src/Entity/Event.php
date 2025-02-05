@@ -53,7 +53,7 @@ class Event
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -89,7 +89,7 @@ class Event
         return $this;
     }
 
-    public function getStatus(): ?EventStatusEnum
+    public function getStatus(): EventStatusEnum
     {
         return $this->status;
     }

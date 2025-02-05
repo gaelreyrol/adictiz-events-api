@@ -283,5 +283,8 @@
             "config/packages/web_profiler.yaml",
             "config/routes/web_profiler.yaml"
         ]
+    },
+    "symfonycasts/micro-mapper": {
+        "version": "v0.2.1"
     }
 }
