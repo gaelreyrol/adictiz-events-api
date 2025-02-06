@@ -25,6 +25,7 @@
               minikube
               skaffold
               chart-testing
+              grafana-loki
               symfony-cli
               phpEnv
               phpEnv.packages.composer

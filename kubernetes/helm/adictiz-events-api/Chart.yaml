@@ -12,6 +12,12 @@ dependencies:
     - name: nginx
       version: ~18.3.5
       repository: https://charts.bitnami.com/bitnami/
+    - name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: ~8.9.0
+    - name: loki-stack
+      repository: https://grafana.github.io/helm-charts
+      version: 2.10.2
 maintainers:
     - name: gaelreyrol
       email: me@gaelreyrol.dev

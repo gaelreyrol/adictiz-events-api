@@ -18,8 +18,13 @@ deploy:
             -   name: adictiz-events-api
                 chartPath: ./kubernetes/helm/adictiz-events-api
                 namespace: default
+                upgradeOnChange: true
                 valuesFiles:
                     - ./kubernetes/helm/adictiz-events-api/values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/postgresql-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/nginx-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/grafana-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/loki-values.yaml
                 setValueTemplates:
                     php.image.registry: "{{.IMAGE_DOMAIN_adictiz_events_api_php}}"
                     php.image.repository: "{{.IMAGE_REPO_NO_DOMAIN_adictiz_events_api_php}}"
@@ -31,3 +36,13 @@ portForward:
       namespace: default
       port: 80
       localPort: 8000
+    - resourceType: service
+      resourceName: adictiz-events-api-grafana
+      namespace: default
+      port: 80
+      localPort: 3000
+    - resourceType: service
+      resourceName: adictiz-events-api-loki
+      namespace: default
+      port: 3100
+      localPort: 3100
