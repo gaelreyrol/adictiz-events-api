@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: {{ .Values.nginx.existingServerBlockConfigmap }}
+    name: {{ include "adictiz-events-api.fullname" . }}-nginx
 data:
     php-block.conf: |
         upstream php {

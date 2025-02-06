@@ -5,5 +5,11 @@ dependencies:
 - name: nginx
   repository: https://charts.bitnami.com/bitnami/
   version: 18.3.5
-digest: sha256:99f1fd4a16e7845d1ea3d8292f07513a3394bb77699794265109453aa59946b3
-generated: "2025-02-04T12:13:32.398744063+01:00"
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 8.9.0
+- name: loki-stack
+  repository: https://grafana.github.io/helm-charts
+  version: 2.10.2
+digest: sha256:30f7e8773bf54d2b11b94059a2abf10eb67df6a6c430c3b7c2df966668f6f9ec
+generated: "2025-02-06T10:13:48.005856424+01:00"
