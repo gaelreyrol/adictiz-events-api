@@ -23,8 +23,9 @@ deploy:
                     - ./kubernetes/helm/adictiz-events-api/values.yaml
                     - ./kubernetes/helm/adictiz-events-api/postgresql-values.yaml
                     - ./kubernetes/helm/adictiz-events-api/nginx-values.yaml
-                    - ./kubernetes/helm/adictiz-events-api/grafana-values.yaml
                     - ./kubernetes/helm/adictiz-events-api/loki-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/promtail-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/kube-prometheus-stack-values.yaml
                 setValueTemplates:
                     php.image.registry: "{{.IMAGE_DOMAIN_adictiz_events_api_php}}"
                     php.image.repository: "{{.IMAGE_REPO_NO_DOMAIN_adictiz_events_api_php}}"

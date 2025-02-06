@@ -7,7 +7,7 @@ if [ "${1#-}" != "$1" ]; then
 fi
 
 if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
-	PHP_INI_RECOMMENDED="$PHP_INI_DIR/app.ini"
+	PHP_INI_RECOMMENDED="$PHP_INI_DIR/php.ini-production"
 	ln -sf "$PHP_INI_RECOMMENDED" "$PHP_INI_DIR/php.ini"
 
 	mkdir -p var/cache var/log

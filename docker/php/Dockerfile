@@ -26,8 +26,6 @@ RUN set -eux; \
 RUN set -eux; \
     install-php-extensions pgsql pdo_pgsql
 
-COPY --link docker/php/php.ini $PHP_INI_DIR/conf.d/app.ini
-
 COPY --link --from=composer/composer:2-bin /composer /usr/bin/composer
 
 ENV COMPOSER_ALLOW_SUPERUSER=1

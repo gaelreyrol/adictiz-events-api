@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+    name: {{ include "adictiz-events-api.fullname" . }}
+spec:
+    groups:
+        - name: PostgreSQL
+          rules:
+              - alert: PostgresInstanceDown
+                expr: pg_up == 0
+                for: 1m
+                labels:
+                    severity: critical
+                    service: "PostgreSQL"
+                annotations:
+                    summary: "Postgres server instance is down"
+                    description: "Postgres has not been responding for the past 1 minutes on {{ "{{" }} $labels.instance }}"
+                    title: "Postgres server instance {{ "{{" }} $labels.instance }} is down "
+        - name: Nginx
+          rules:
+              - alert: NginxInstanceDown
+                expr: nginx_up == 0
+                for: 1m
+                labels:
+                    severity: critical
+                    service: "Nginx"
+                annotations:
+                    summary: "Nginx server instance is down"
+                    description: "Nginx has not been responding for the past 1 minutes on {{ "{{" }} $labels.instance }}"
+                    title: "Nginx server instance {{ "{{" }} $labels.instance }} is down "
+        - name: PHP-FPM
+          rules:
+              - alert: PHPFPMInstanceDown
+                expr: phpfpm_up == 0
+                for: 1m
+                labels:
+                    severity: critical
+                    service: "PHP-FPM"
+                annotations:
+                    summary: "PHP-FPM server instance is down"
+                    description: "PHP-FPM has not been responding for the past 1 minutes on {{ "{{" }} $labels.instance }}"
+                    title: "PHP-FPM server instance {{ "{{" }} $labels.instance }} is down "

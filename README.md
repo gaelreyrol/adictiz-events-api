@@ -114,7 +114,11 @@ Cette section décrit comment configurer un cluster local avec minikube, déploy
 Pour démarrer votre cluster minikube et activer l'addon Ingress (utile pour la gestion des routes HTTP externes), exécutez les commandes suivantes :
 
 ```shell
-minikube start
+minikube start --bootstrapper=kubeadm \
+  --extra-config=kubelet.authentication-token-webhook=true \
+  --extra-config=kubelet.authorization-mode=Webhook \
+  --extra-config=scheduler.bind-address=0.0.0.0 \
+  --extra-config=controller-manager.bind-address=0.0.0.0
 minikube addons enable ingress
 ```
 

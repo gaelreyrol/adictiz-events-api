@@ -11,6 +11,12 @@ data:
         server {
             listen {{ .Values.nginx.containerPorts.http }};
 
+            location = /status {
+                stub_status;
+                allow 127.0.0.1;
+                deny all;
+            }
+
             location / {
                 try_files $uri /index.php$is_args$args;
             }

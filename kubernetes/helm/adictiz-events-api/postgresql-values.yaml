@@ -132,7 +132,7 @@ postgresql:
       pullSecrets: []
       ## Set to true if you would like to see extra information on logs
       ##
-      debug: false
+      debug: true
     ## Authentication parameters
     ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#setting-the-root-password-on-first-run
     ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-on-first-run
@@ -1580,7 +1580,7 @@ postgresql:
     volumePermissions:
       ## @param volumePermissions.enabled Enable init container that changes the owner and group of the persistent volume
       ##
-      enabled: false
+      enabled: true
       ## @param volumePermissions.image.registry [default: REGISTRY_NAME] Init container volume-permissions image registry
       ## @param volumePermissions.image.repository [default: REPOSITORY_NAME/os-shell] Init container volume-permissions image repository
       ## @skip volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
@@ -1689,7 +1689,7 @@ postgresql:
     metrics:
       ## @param metrics.enabled Start a prometheus exporter
       ##
-      enabled: false
+      enabled: true
       ## @param metrics.image.registry [default: REGISTRY_NAME] PostgreSQL Prometheus Exporter image registry
       ## @param metrics.image.repository [default: REPOSITORY_NAME/postgres-exporter] PostgreSQL Prometheus Exporter image repository
       ## @skip metrics.image.tag PostgreSQL Prometheus Exporter image tag (immutable tags are recommended)
@@ -1865,7 +1865,7 @@ postgresql:
       serviceMonitor:
         ## @param metrics.serviceMonitor.enabled Create ServiceMonitor Resource for scraping metrics using Prometheus Operator
         ##
-        enabled: false
+        enabled: true
         ## @param metrics.serviceMonitor.namespace Namespace for the ServiceMonitor Resource (defaults to the Release Namespace)
         ##
         namespace: ""
