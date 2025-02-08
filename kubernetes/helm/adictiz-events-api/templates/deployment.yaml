@@ -13,6 +13,7 @@ spec:
         metadata:
             annotations:
                 checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+                checksum/config-php-fpm: {{ include (print $.Template.BasePath "/configmap-php-fpm.yaml") . | sha256sum }}
                 checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
                 checksum/secret-jwt-keys: {{ include (print $.Template.BasePath "/secrets-jwt-keys.yaml") . | sha256sum }}
             labels:
@@ -23,6 +24,50 @@ spec:
                 - name: jwt-keys
                   secret:
                       secretName: {{ include "adictiz-events-api.fullname" . }}-jwt-keys
+                - name: php-fpm-app-conf
+                  configMap:
+                      name: {{ include "adictiz-events-api.fullname" . }}-php-fpm
+                      items:
+                          -   key: app-conf
+                              path: app.conf
+                - name: php-fpm-app-ini
+                  configMap:
+                      name: {{ include "adictiz-events-api.fullname" . }}-php-fpm
+                      items:
+                          -   key: app-ini
+                              path: app.ini
+                - name: php-run
+                  emptyDir: {}
+            initContainers:
+                - name: php-fpm-exporter
+                  image: hipages/php-fpm_exporter:2.2.0
+                  restartPolicy: Always
+                  env:
+                      - name: PHP_FPM_SCRAPE_URI
+                        value: "unix:///run/php/php-fpm.sock;/status"
+                      - name: PHP_FPM_FIX_PROCESS_COUNT
+                        value: "true"
+                      - name: PHP_FPM_LOG_LEVEL
+                        value: "debug"
+                  volumeMounts:
+                      - name: php-run
+                        mountPath: /run/php
+                  ports:
+                      - name: exporter
+                        containerPort: 9253
+                        protocol: TCP
+                  readinessProbe:
+                    httpGet:
+                        path: /metrics
+                        port: exporter
+                    initialDelaySeconds: 15
+                    periodSeconds: 5
+                  livenessProbe:
+                    httpGet:
+                        path: /metrics
+                        port: exporter
+                    initialDelaySeconds: 15
+                    periodSeconds: 5
             containers:
                 -   name: {{ .Chart.Name }}
                     image: "{{ .Values.php.image.registry }}/{{ .Values.php.image.repository }}:{{ .Values.php.image.tag }}"
@@ -33,6 +78,14 @@ spec:
                         -   secretRef:
                                 name: {{ include "adictiz-events-api.fullname" . }}
                     volumeMounts:
+                        -   name: php-fpm-app-conf
+                            mountPath: /usr/local/etc/php-fpm.d
+                            readOnly: true
+                        -   name: php-fpm-app-ini
+                            mountPath: /usr/local/etc/php.conf.d
+                            readOnly: true
+                        -   name: php-run
+                            mountPath: /run/php
                         -   name: jwt-keys
                             mountPath: /srv/app/config/jwt
                             readOnly: true
@@ -42,11 +95,20 @@ spec:
                             protocol: TCP
                     livenessProbe:
                         tcpSocket:
-                            port: 9000
+                            port: http
                         initialDelaySeconds: 15
                         periodSeconds: 5
                     readinessProbe:
                         tcpSocket:
-                            port: 9000
+                            port: http
                         initialDelaySeconds: 15
                         periodSeconds: 5
+                    resources:
+                        requests:
+                            cpu: 250m
+                            memory: 256Mi
+                            ephemeral-storage: 200Mi
+                        limits:
+                            cpu: 375m
+                            memory: 384Mi
+                            ephemeral-storage: 1Gi

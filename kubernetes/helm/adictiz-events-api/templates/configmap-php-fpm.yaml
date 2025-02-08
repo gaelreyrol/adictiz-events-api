@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ include "adictiz-events-api.fullname" . }}-php-fpm
+data:
+    app-ini: |
+        apc.enable_cli = 1
+        expose_php = 0
+        date.timezone = Europe/Paris
+        session.use_strict_mode = 1
+        zend.detect_unicode = 0
+
+        # http://symfony.com/doc/current/performance.html
+        opcache.interned_strings_buffer = 16
+        opcache.max_accelerated_files = 20000
+        opcache.memory_consumption = 256
+        opcache.validate_timestamps=0
+        opcache.preload_user=www-data
+        opcache.preload=/srv/app/config/preload.php
+        opcache.enable_file_override = 1
+
+        realpath_cache_size = 4096K
+        realpath_cache_ttl = 600
+    app-conf: |
+        [global]
+        daemonize = no
+        error_log = /proc/self/fd/2
+
+        ; https://github.com/docker-library/php/pull/725#issuecomment-443540114
+        log_limit = 8192
+
+        [www]
+        user = www-data
+        group = www-data
+
+        listen = 9000
+        ; php-fpm closes STDOUT on startup, so sending logs to /proc/self/fd/1 does not work.
+        ; https://bugs.php.net/bug.php?id=73886
+        access.log = /proc/self/fd/2
+
+        clear_env = no
+
+        ; Ensure worker stdout and stderr are sent to the main error log.
+        catch_workers_output = yes
+        decorate_workers_output = no
+
+        pm = static
+        pm.max_children = 2
+
+        pm.status_listen = /run/php/php-fpm.sock
+        pm.status_path = /status

@@ -1,46 +1,63 @@
-loki-stack:
-    test_pod:
+loki:
+    fullnameOverride: "adictiz-events-api-loki"
+    loki:
+        commonConfig:
+            replication_factor: 1
+        schemaConfig:
+            configs:
+                - from: "2024-04-01"
+                  store: tsdb
+                  object_store: s3
+                  schema: v13
+                  index:
+                      prefix: loki_index_
+                      period: 24h
+        pattern_ingester:
+            enabled: true
+        limits_config:
+            allow_structured_metadata: true
+            volume_enabled: true
+        ruler:
+            enable_api: true
+        auth_enabled: false
+
+    enterprise:
         enabled: false
 
-    loki:
-      enabled: true
-      isDefault: true
-      url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
-      readinessProbe:
-        httpGet:
-          path: /ready
-          port: http-metrics
-        initialDelaySeconds: 45
-      livenessProbe:
-        httpGet:
-          path: /ready
-          port: http-metrics
-        initialDelaySeconds: 45
-      datasource:
-        jsonData: "{}"
-        uid: ""
+    minio:
+        enabled: true
 
-    promtail:
-      enabled: true
-      config:
-        logLevel: info
-        serverPort: 3101
-        clients:
-          - url: http://{{ .Release.Name }}-loki:3100/loki/api/v1/push
-        snippets:
-          pipelineStages:
-            - cri: {}
-            - match:
-                selector: '{app="adictiz-events-api"}'
-                stages:
-                  - json:
-                      expressions:
-                        message: log
-                        context:
-                        extra:
-                        timestamp: datetime
-                  - labels:
-                      channel:
-                      level:
-                      level_name:
-                      datetime:
+    deploymentMode: SingleBinary
+
+    singleBinary:
+        replicas: 1
+
+    test:
+        enabled: false
+
+    # Zero out replica counts of other deployment modes
+    backend:
+        replicas: 0
+    read:
+        replicas: 0
+    write:
+        replicas: 0
+
+    ingester:
+        replicas: 0
+    querier:
+        replicas: 0
+    queryFrontend:
+        replicas: 0
+    queryScheduler:
+        replicas: 0
+    distributor:
+        replicas: 0
+    compactor:
+        replicas: 0
+    indexGateway:
+        replicas: 0
+    bloomCompactor:
+        replicas: 0
+    bloomGateway:
+        replicas: 0
