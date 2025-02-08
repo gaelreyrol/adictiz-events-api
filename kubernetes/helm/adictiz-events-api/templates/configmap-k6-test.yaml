@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ include "adictiz-events-api.fullname" . }}-k6-test
+data:
+    test.js: |
+        import http from 'k6/http';
+        import { Rate } from 'k6/metrics';
+        import { check, sleep } from 'k6';
+
+        const endpoint = '{{ .Values.k6.endpoint }}';
+
+        const failRate = new Rate('failed_requests');
+
+        export let options = {
+            stages: [
+                { target: 50, duration: '30s' },
+                { target: 100, duration: '1m' },
+                { target: 400, duration: '3m' },
+                { target: 100, duration: '1m' },
+                { target: 0, duration: '30s' },
+                { target: 300, duration: '2m' },
+                { target: 300, duration: '2m' },
+                { target: 50, duration: '30s' },
+                { target: 0, duration: '30s' }
+            ],
+            thresholds: {
+                failed_requests: ['rate<=0'],
+                http_req_duration: ['p(95)<500']
+            }
+        };
+
+        export function setup() {
+            const loginRes = http.post(`${endpoint}/api/login`, JSON.stringify({
+                username: '{{ .Values.k6.user.username }}',
+                password: '{{ .Values.k6.user.password }}'
+            }), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const token = loginRes.json('token');
+            check(token, {
+                'logged in successfully': () => token !== ''
+            });
+
+            return token;
+        }
+
+        export default function (token) {
+            const url = `${endpoint}/api/events`;
+            const requestHeaders = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+
+            const results = http.batch([
+                { method: 'GET', url: `${url}?limit=100&page=1`, params: { headers: requestHeaders } },
+                { method: 'GET', url: `${url}?limit=100&page=2`, params: { headers: requestHeaders } },
+                { method: 'GET', url: `${url}?limit=100&page=3`, params: { headers: requestHeaders } },
+                { method: 'GET', url: `${url}?limit=100&page=4`, params: { headers: requestHeaders } },
+                { method: 'GET', url: `${url}?limit=100&page=5`, params: { headers: requestHeaders } }
+            ]);
+
+            results.map((result) => {
+                check(result, {
+                    'http response status code is 200': result.status === 200
+                });
+                failRate.add(result.status !== 200);
+            });
+            sleep(1);
+        }

@@ -69,6 +69,12 @@ bin/console doctrine:database:migrate
 symfony server:start # -d pour lancer le serveur en arrière plan
 ```
 
+Vous pouvez utiliser la commande suivante pour créer un utilisateur :
+
+```shell
+bin/console adictiz:user:create john@doe.com mystrongpassword
+```
+
 ## Exécution des tests
 
 Avant d'exécuter les tests, assurez-vous que le schéma de la base de données soit à jour :
@@ -127,11 +133,45 @@ minikube addons enable ingress
 Le déploiement de l'application est automatisé grâce à Skaffold. Assurez-vous que votre fichier skaffold.yaml est correctement configuré. Ensuite, lancez la commande suivante :
 
 ```shell
-skaffold dev
+skaffold run --port-forward=user
+# Si vous souhaitez re-déployer à chaud l'environnement, privilégiez `skaffold dev`
 ```
 
 Une fois le déploiement effectué, vérifier que l'API répond correctement avec la commande suivante :
 
 ```shell
 curl --resolve "adictiz-events-api.local:80:$(minikube ip)" -i http://adictiz-events-api.local
+export TOKEN=(curl -s --resolve "adictiz-events-api.local:80:$(minikube ip)" -X POST -H "Content-Type: application/json" -d '{"username": "k6@adictiz.com", "password": "password"}' http://adictiz-events-api.local/api/login | jq -r .token)
+curl --resolve "adictiz-events-api.local:80:$(minikube ip)" http://adictiz-events-api.local/api/events \
+  -X GET \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" | jq
 ```
+
+### Autoscalabilité de l'environnement
+
+Vérifier que la règle de métrique personnalisée à partir de métrique Prometheus est disponible :
+
+```shell
+kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/phpfpm_active_processes_utilization" | jq .
+```
+
+### Montée en charge avec K6
+
+Pour exécuter les tests de charge, lancer la commande suivante :
+
+```shell
+kubectl exec services/adictiz-events-api -it -- bin/console adictiz:user:create k6@adictiz.com password
+kubectl exec services/adictiz-events-api -it -- bin/console doctrine:fixtures:load --group=k6 --append --no-interaction
+cd kubernetes/helm/adictiz-events-api
+helm test adictiz-events-api
+```
+
+Puis consulter les dashboards Grafana suivants :
+
+<http://127.0.0.1:3000/dashboards>
+
+- k6 Prometheus (Native Histograms)
+- Horizontal Pod Autoscaler (HPA)
+- Kubernetes PHP-FPM
+- NGINX

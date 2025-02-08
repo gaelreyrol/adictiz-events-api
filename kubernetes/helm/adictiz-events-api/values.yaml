@@ -9,7 +9,7 @@ php:
     env:
         appEnv: 'prod'
         appDebug: false
-        appSecret: ''
+        appSecret: '0962712df580e1a31fca25c3bc9c12b6'
         trustedHosts: "^127\\.0\\.0\\.1|localhost|adictiz\\-events\\-api\\.local$"
         trustedProxies:
             - "127.0.0.1"
@@ -17,7 +17,8 @@ php:
             - "172.16.0.0/12"
             - "192.168.0.0/16"
     jwt:
-        passphrase: ''
+        passphrase: 'd4ba7bf73d540c87d0557f0fbc4f73bca144d37fdf2954a3f413b6eedaaf2b88'
+        secretKeyPath: '%kernel.project_dir%/config/jwt/private.pem'
         secretKey: |
             -----BEGIN ENCRYPTED PRIVATE KEY-----
             MIIFJDBWBgkqhkiG9w0BBQ0wSTAxBgkqhkiG9w0BBQwwJAQQ+sPWHNRDVgHsH+FW
@@ -49,6 +50,7 @@ php:
             a5XFU+j4YP9OFx+vzojVGLVqGZ33Fr82RQWoZg+n2Ddhyu0RTgSIMkJ/V2CFCDoO
             Pt327e3bzxrb2nAq81Bo0focjQH9+gJK
             -----END ENCRYPTED PRIVATE KEY-----
+        publicKeyPath: '%kernel.project_dir%/config/jwt/public.pem'
         publicKey: |
             -----BEGIN PUBLIC KEY-----
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8U1+K0pPf4yzUMRpXfDk
@@ -59,3 +61,17 @@ php:
             CRoM7p4c/44BDMW/89dJRz22ILR98HYbQd7Wa67lOOK7d4dDFcrgGnzOcU6RaX3C
             SQIDAQAB
             -----END PUBLIC KEY-----
+
+# bin/console adictiz:user:create k6@adictiz.com password
+# bin/console doctrine:fixtures:load --group=k6 --append --no-interaction
+k6:
+    image:
+        registry: ghcr.io
+        repository: gaelreyrol/adictiz-events-api
+        pullPolicy: IfNotPresent
+        tag: k6
+    endpoint: "http://adictiz-events-api-nginx.default.svc.cluster.local"
+    user:
+        username: "k6@adictiz.com"
+        password: "password"
+

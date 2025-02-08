@@ -18,8 +18,8 @@ env:
     APP_DEBUG: false
 
 jobs:
-    docker:
-        name: Docker
+    docker-php-fpm:
+        name: PHP-FPM Docker
         if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'pull_request' }}
         runs-on: ubuntu-latest
         permissions:
@@ -49,6 +49,40 @@ jobs:
                 with:
                     context: .
                     file: docker/php/Dockerfile
+                    push: ${{ github.event_name == 'workflow_run' }}
+                    tags: ${{ steps.meta.outputs.tags }}
+                    labels: ${{ steps.meta.outputs.labels }}
+    docker-k6:
+        name: K6 Docker
+        if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'pull_request' }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+            attestations: write
+            id-token: write
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Log in to the Container registry
+                uses: docker/login-action@v3
+                with:
+                    registry: ${{ env.REGISTRY }}
+                    username: ${{ github.actor }}
+                    password: ${{ secrets.GITHUB_TOKEN }}
+            -   name: Extract metadata (tags, labels) for Docker
+                id: meta
+                uses: docker/metadata-action@v5
+                with:
+                    images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                    tags: |
+                        type=raw,value=k6,enable={{is_default_branch}}
+            -   name: Build and push Docker image
+                id: push
+                uses: docker/build-push-action@v6
+                with:
+                    context: .
+                    file: docker/k6/Dockerfile
                     push: ${{ github.event_name == 'workflow_run' }}
                     tags: ${{ steps.meta.outputs.tags }}
                     labels: ${{ steps.meta.outputs.labels }}

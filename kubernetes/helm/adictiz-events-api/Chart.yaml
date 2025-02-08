@@ -21,6 +21,12 @@ dependencies:
     - name: kube-prometheus-stack
       repository: https://prometheus-community.github.io/helm-charts
       version: ~69.2.0
+    - name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: ~4.11.0
+    - name: k6-operator
+      repository: https://grafana.github.io/helm-charts
+      version: ~3.11.0
 maintainers:
     - name: gaelreyrol
       email: me@gaelreyrol.dev

@@ -3810,7 +3810,8 @@ kube-prometheus-stack:
 
         # EnableFeatures API enables access to Prometheus disabled features.
         # ref: https://prometheus.io/docs/prometheus/latest/disabled_features/
-        enableFeatures: []
+        enableFeatures:
+          - native-histograms
         # - exemplar-storage
 
         ## Image of Prometheus.
@@ -3862,7 +3863,7 @@ kube-prometheus-stack:
 
         ## enable --web.enable-remote-write-receiver flag on prometheus-server
         ##
-        enableRemoteWriteReceiver: false
+        enableRemoteWriteReceiver: true
 
         ## Name of the external label used to denote replica name
         ##
@@ -4121,13 +4122,14 @@ kube-prometheus-stack:
 
         ## The remote_write spec configuration for Prometheus.
         ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
-        remoteWrite: []
+        remoteWrite:
+            - url: http://adictiz-events-api-kube-pr-prometheus.default.svc/api/v1/write
         # - url: http://remote1/push
         ## additionalRemoteWrite is appended to remoteWrite
         additionalRemoteWrite: []
 
         ## Enable/Disable Grafana dashboards provisioning for prometheus remote write feature
-        remoteWriteDashboards: false
+        remoteWriteDashboards: true
 
         ## Resource limits & requests
         ##
