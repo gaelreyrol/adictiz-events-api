@@ -3,18 +3,23 @@
 namespace Adictiz\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 class IndexController extends AbstractController
 {
     #[Route('/')]
-    public function index(): Response
+    public function index(): JsonResponse
     {
-        return new Response('Hello World!', 200, ['Content-Type' => 'text/plain']);
+        return $this->json([
+            'message' => 'Hello from Adictiz Events API!',
+        ]);
     }
 
+    /**
+     * Cette route permet de tester le déclenchement d'une erreur et active le handler Monolog "fingers crossed".
+     */
     #[Route('/exception')]
     public function exception(): never
     {
