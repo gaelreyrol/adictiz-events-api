@@ -14,5 +14,11 @@ dependencies:
 - name: kube-prometheus-stack
   repository: https://prometheus-community.github.io/helm-charts
   version: 69.2.0
-digest: sha256:4a4439f5d1be0ec49d486cbf9a663d10f1d3489f89b6a1be0631b6c7529134e7
-generated: "2025-02-07T10:38:20.914191959+01:00"
+- name: prometheus-adapter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 4.11.0
+- name: k6-operator
+  repository: https://grafana.github.io/helm-charts
+  version: 3.11.0
+digest: sha256:f1b962287469b015d5aea0fcbc6a01cdf4b8945e0f1b00a5d25e0f7c11f5b047
+generated: "2025-02-08T09:59:45.268401344+01:00"

@@ -11,6 +11,7 @@ spec:
         metadata:
             annotations:
                 checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+                checksum/config-php-fpm: {{ include (print $.Template.BasePath "/configmap-php-fpm.yaml") . | sha256sum }}
                 checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
                 checksum/secret-jwt-keys: {{ include (print $.Template.BasePath "/secrets-jwt-keys.yaml") . | sha256sum }}
             labels:
@@ -21,11 +22,23 @@ spec:
                 - name: jwt-keys
                   secret:
                       secretName: {{ include "adictiz-events-api.fullname" . }}-jwt-keys
+                - name: php-fpm-app-conf
+                  configMap:
+                      name: {{ include "adictiz-events-api.fullname" . }}-php-fpm
+                      items:
+                          -   key: app-conf
+                              path: app.conf
+                - name: php-fpm-app-ini
+                  configMap:
+                      name: {{ include "adictiz-events-api.fullname" . }}-php-fpm
+                      items:
+                          -   key: app-ini
+                              path: app.ini
             containers:
                 -   name: {{ .Chart.Name }}-migrate-database
                     image: "{{ .Values.php.image.registry }}/{{ .Values.php.image.repository }}:{{ .Values.php.image.tag }}"
                     imagePullPolicy: {{ .Values.php.image.pullPolicy }}
-                    command:
+                    args:
                         - "bin/console"
                         - "doctrine:migrations:migrate"
                         - "--no-interaction"
@@ -35,6 +48,12 @@ spec:
                         -   secretRef:
                                 name: {{ include "adictiz-events-api.fullname" . }}
                     volumeMounts:
+                        -   name: php-fpm-app-conf
+                            mountPath: /usr/local/etc/php-fpm.d
+                            readOnly: true
+                        -   name: php-fpm-app-ini
+                            mountPath: /usr/local/etc/php.conf.d
+                            readOnly: true
                         -   name: jwt-keys
                             mountPath: /srv/app/config/jwt
                             readOnly: true

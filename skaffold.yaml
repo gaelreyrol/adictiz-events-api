@@ -10,6 +10,10 @@ build:
             context: .
             docker:
                 dockerfile: docker/php/Dockerfile
+        -   image: adictiz/events-api-k6
+            context: .
+            docker:
+                dockerfile: docker/k6/Dockerfile
 
 deploy:
     kubeContext: minikube
@@ -26,10 +30,15 @@ deploy:
                     - ./kubernetes/helm/adictiz-events-api/loki-values.yaml
                     - ./kubernetes/helm/adictiz-events-api/promtail-values.yaml
                     - ./kubernetes/helm/adictiz-events-api/kube-prometheus-stack-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/prometheus-adapter-values.yaml
+                    - ./kubernetes/helm/adictiz-events-api/k6-operator-values.yaml
                 setValueTemplates:
                     php.image.registry: "{{.IMAGE_DOMAIN_adictiz_events_api_php}}"
                     php.image.repository: "{{.IMAGE_REPO_NO_DOMAIN_adictiz_events_api_php}}"
                     php.image.tag: "{{.IMAGE_TAG_adictiz_events_api_php}}@{{.IMAGE_DIGEST_adictiz_events_api_php}}"
+                    k6.image.registry: "{{.IMAGE_DOMAIN_adictiz_events_api_k6}}"
+                    k6.image.repository: "{{.IMAGE_REPO_NO_DOMAIN_adictiz_events_api_k6}}"
+                    k6.image.tag: "{{.IMAGE_TAG_adictiz_events_api_k6}}@{{.IMAGE_DIGEST_adictiz_events_api_k6}}"
 
 portForward:
     - resourceType: service
@@ -47,3 +56,13 @@ portForward:
       namespace: default
       port: 3100
       localPort: 3100
+    - resourceType: service
+      resourceName: adictiz-events-api-kube-pr-prometheus
+      namespace: default
+      port: 9090
+      localPort: 9090
+    - resourceType: service
+      resourceName: adictiz-events-api-kube-pr-alertmanager
+      namespace: default
+      port: 9093
+      localPort: 9093

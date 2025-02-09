@@ -1,0 +1,27 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+    name: {{ include "adictiz-events-api.fullname" . }}-php-fpm
+    labels:
+    {{- include "adictiz-events-api.labels" . | nindent 8 }}
+spec:
+    scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: {{ include "adictiz-events-api.fullname" . }}
+    minReplicas: 2
+    maxReplicas: 10
+    behavior:
+        scaleDown:
+            policies:
+                -   type: Pods
+                    value: 1
+                    periodSeconds: 60
+    metrics:
+        - type: Pods
+          pods:
+              metric:
+                  name: phpfpm_active_processes_utilization
+              target:
+                  type: AverageValue
+                  averageValue: 0.2

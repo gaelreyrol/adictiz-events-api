@@ -1,5 +1,5 @@
 #! /usr/bin/env sh
-set -e
+set -eux
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
@@ -13,6 +13,9 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	mkdir -p var/cache var/log
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
+
+  composer dump-env prod
+  composer run-script --no-dev post-install-cmd
 
 	echo "Waiting for db to be ready..."
 	ATTEMPTS_LEFT_TO_REACH_DATABASE=60

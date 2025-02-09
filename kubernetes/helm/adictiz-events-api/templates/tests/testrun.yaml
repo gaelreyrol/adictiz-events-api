@@ -1,0 +1,25 @@
+apiVersion: k6.io/v1alpha1
+kind: TestRun
+metadata:
+    name: {{ include "adictiz-events-api.fullname" . }}-k6-testrun
+    annotations:
+        "helm.sh/hook": test
+spec:
+    parallelism: 4
+    arguments: "-o experimental-prometheus-rw"
+    runner:
+        image: "{{ .Values.k6.image.registry }}/{{ .Values.k6.image.repository }}:{{ .Values.k6.image.tag }}"
+        imagePullPolicy: {{ .Values.k6.image.pullPolicy }}
+        env:
+            -   name: K6_PROMETHEUS_RW_SERVER_URL
+                value: "http://adictiz-events-api-kube-pr-prometheus.default.svc:9090/api/v1/write"
+            -   name: K6_WEB_DASHBOARD
+                value: "true"
+            -   name: K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM
+                value: "true"
+            -   name: XK6_FAKER_SEED
+                value: "11"
+    script:
+        configMap:
+            name: {{ include "adictiz-events-api.fullname" . }}-k6-test
+            file: test.js

@@ -42,7 +42,9 @@ loki:
         replicas: 0
     write:
         replicas: 0
-
+    gateway:
+        affinity:
+            podAntiAffinity: {}
     ingester:
         replicas: 0
     querier:
